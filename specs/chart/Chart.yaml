@@ -1,0 +1,17 @@
+apiVersion: v2
+name: homelab-k3s
+description: Helm chart for deploying Home lab on k3s with Raspberry Pi OS.
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: n8n
+    version: 0.20.0
+    repository: oci://8gears.container-registry.com/library
+  - name: postgresql
+    version: 16.7.15
+    repository: oci://registry-1.docker.io/bitnamicharts
+  - name: nextcloud
+    version: 6.6.10
+    repository: https://nextcloud.github.io/helm/

@@ -1,0 +1,12 @@
+dependencies:
+- name: n8n
+  repository: oci://8gears.container-registry.com/library
+  version: 0.20.0
+- name: postgresql
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 16.7.15
+- name: nextcloud
+  repository: https://nextcloud.github.io/helm/
+  version: 6.6.10
+digest: sha256:936de56b85cc82217e77a492f494ac03d62c5175846d7540dc4f34c1f76b3deb
+generated: "2025-07-06T17:17:20.073470301-03:00"

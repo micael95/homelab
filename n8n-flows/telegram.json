@@ -1,0 +1,151 @@
+{
+    "name": "Main",
+    "nodes": [
+      {
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {}
+        },
+        "id": "0996b390-3a1c-4334-894f-f40e0a4e6844",
+        "name": "Telegram Trigger",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1,
+        "position": [
+          820,
+          360
+        ],
+        "webhookId": "6b66f64f-146b-48ca-adab-1e6f556d5a4d",
+        "credentials": {
+          "telegramApi": {
+            "id": "kUXMOmS5bMsoYwPX",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "={{ $json.output }}",
+          "additionalFields": {}
+        },
+        "id": "aa729e81-49bb-485a-95de-0261218d3021",
+        "name": "Telegram",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.1,
+        "position": [
+          1400,
+          360
+        ],
+        "credentials": {
+          "telegramApi": {
+            "id": "kUXMOmS5bMsoYwPX",
+            "name": "Telegram account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "qwen2.5:0.5b",
+          "options": {}
+        },
+        "id": "0c90c867-5575-4741-aad6-6b346bcb0e3d",
+        "name": "Ollama Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+        "typeVersion": 1,
+        "position": [
+          1020,
+          580
+        ],
+        "credentials": {
+          "ollamaApi": {
+            "id": "X63uPSR3Ic8RnDvg",
+            "name": "Ollama account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "text": "={{ $json.message.text }}",
+          "options": {}
+        },
+        "id": "dbcef3ad-4993-4e69-8f23-1b55c653c42c",
+        "name": "AI Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.1,
+        "position": [
+          1020,
+          360
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "6ceabd93-925f-4be3-92a3-2988899f6217",
+        "name": "Window Buffer Memory",
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1,
+        "position": [
+          1120,
+          580
+        ]
+      }
+    ],
+    "pinData": {},
+    "connections": {
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ollama Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Telegram",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Window Buffer Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "active": true,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "versionId": "455a0352-0ff9-4588-b368-951c2d5f3d93",
+    "id": "pyCtcfiipAcexUei",
+    "meta": {
+      "instanceId": "098577c69f3804126d0fee39a62e2eddb2e87b66afc45e2b819feeca5a1e65cc"
+    },
+    "tags": []
+  }

@@ -1,0 +1,151 @@
+pullPolicy: Always
+environment: production
+
+probes:
+  timeoutSeconds: 120
+  periodSeconds: 200
+  delay: 150
+
+nextcloud:
+  nextcloud:
+    host: drive.example.com         # <-- change to your domain
+    username: your-username         # <-- change to your username
+
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+
+  image:
+    flavor: fpm
+
+  nginx:
+    enabled: true
+
+  internalDatabase:
+    enabled: false
+
+  externalDatabase:
+    enabled: true
+    type: postgresql
+    host: homelab-k3s-postgresql.default.svc.cluster.local
+    user: postgres
+    existingSecret:
+      enabled: true
+      secretName: nextcloud
+      usernameKey: dbusername
+      passwordKey: dbpassword
+
+  persistence:
+    enabled: true
+
+  ingress:
+    enabled: true
+    annotations:
+      spec.ingressClassName: traefik
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    tls:
+      - secretName: nextcloud-tls
+        hosts:
+          - drive.example.com       # <-- change to your domain
+
+n8n:
+  extraEnv:
+    WEBHOOK_URL: "https://n8n.example.com:8443/"   # <-- change to your domain
+
+  config:
+    database:
+      type: postgresdb
+      postgresdb:
+        database: n8n
+        host: homelab-k3s-postgresql.default.svc.cluster.local
+        user: postgres
+        password: YOUR_N8N_DB_PASSWORD   # <-- use a Kubernetes secret in production
+
+  image:
+    repository: n8nio/n8n
+    pullPolicy: IfNotPresent
+    tag: "1.100.1"
+
+  ingress:
+    enabled: true
+    annotations:
+      spec.ingressClassName: traefik
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: n8n.example.com      # <-- change to your domain
+        paths: ["/"]
+    tls:
+      - secretName: n8n-tls
+        hosts:
+          - n8n.example.com        # <-- change to your domain
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+postgresql:
+  volumePermissions:
+    enabled: true
+  auth:
+    existingSecret: postgres-credentials
+    secretKeys:
+      adminPasswordKey: POSTGRES_PASSWORD
+      userPasswordKey: APP_DB_PASSWORD
+
+  global:
+    defaultStorageClass: "local-path"
+
+  primary:
+    persistence:
+      enabled: true
+      storageClass: "local-path"
+      size: 10Gi
+      accessModes:
+        - ReadWriteOnce
+      annotations: {}
+
+    service:
+      type: NodePort
+      ports:
+        postgresql: 5432
+      nodePorts:
+        postgresql: "32432"
+
+  backup:
+    enabled: true
+    command:
+      - /bin/bash
+      - -c
+      - |
+          PGPASSWORD="${PGPASSWORD:-$(< "$PGPASSWORD_FILE")}" \
+          pg_dumpall --clean --if-exists --load-via-partition-root --quote-all-identifiers --no-password \
+          --file="${PGDUMP_DIR}/pg_dumpall-$(date '+%Y-%m-%d-%H-%M').pgdump" \
+          && find "${PGDUMP_DIR}" -type f -name "*.pgdump" -mtime +3 -delete
+    cronjob:
+      schedule: "0 2 * * *"
+      storage:
+        storageClass: "local-path"
+        size: 5Gi
+
+evolution_api:
+  Name: evolution-api
+  replicaCount: 1
+  image: atendai/evolution-api:v2.2.3
+  port: 8080
+  protocol: TCP
+  livenessProbe:
+    path: /
+  readinessProbe:
+    path: /
+  cpu:
+    limits: 1
+    requests: 100m
+  memory:
+    limits: 1Gi
+    requests: 100Mi

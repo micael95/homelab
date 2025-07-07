@@ -1,0 +1,1 @@
+helm upgrade --install homelab-k3s -f values.yaml . --history-max 1

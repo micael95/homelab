@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: youeremail@domain.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      # Uses the DNS-01 method for domain validation. Alternatively, the HTTP-01 (well-known) method can be used to solve the challenge.
+    - dns01:  
+        cloudflare:
+          apiTokenSecretRef:
+            name: cloudflare-api-key
+            key: api-key

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.evolution_api.Name }}
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.evolution_api.Name }}
+spec:
+  replicas: {{ .Values.evolution_api.replicaCount }}
+  selector:
+    matchLabels:
+        app: {{ .Release.Name }}-{{ .Values.evolution_api.Name }}
+  template:
+    metadata:
+      labels:
+          app: {{ .Release.Name }}-{{ .Values.evolution_api.Name }}
+    spec:
+      containers:
+        - name: {{ .Values.evolution_api.Name }}
+          image: {{ .Values.evolution_api.image }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          resources:
+            limits:
+              cpu: {{ .Values.evolution_api.cpu.limits }}
+              memory: {{ .Values.evolution_api.memory.limits }}
+            requests:
+              cpu: {{ .Values.evolution_api.cpu.requests }}
+              memory: {{ .Values.evolution_api.memory.requests }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.evolution_api.port }}
+              protocol: {{ .Values.evolution_api.protocol }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.evolution_api.Name }}
+          livenessProbe:
+           initialDelaySeconds: 150
+           timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+           httpGet:
+              path: {{ .Values.evolution_api.livenessProbe.path }}
+              port: http
+          readinessProbe:
+           initialDelaySeconds: 150
+           timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+           httpGet:
+              path: {{ .Values.evolution_api.readinessProbe.path }}
+              port: http
