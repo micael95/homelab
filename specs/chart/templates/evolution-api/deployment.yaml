@@ -33,13 +33,13 @@ spec:
             - secretRef:
                 name: {{ .Values.evolution_api.Name }}
           livenessProbe:
-           initialDelaySeconds: 150
+           initialDelaySeconds: 30
            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
            httpGet:
               path: {{ .Values.evolution_api.livenessProbe.path }}
               port: http
           readinessProbe:
-           initialDelaySeconds: 150
+           initialDelaySeconds: 30
            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
            httpGet:
               path: {{ .Values.evolution_api.readinessProbe.path }}

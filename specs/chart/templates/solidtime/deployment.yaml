@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Values.solidtime.Name }}
+  labels:
+    app: {{ .Release.Name }}-{{ .Values.solidtime.Name }}
+spec:
+  replicas: {{ .Values.solidtime.replicaCount }}
+  selector:
+    matchLabels:
+        app: {{ .Release.Name }}-{{ .Values.solidtime.Name }}
+  template:
+    metadata:
+      labels:
+          app: {{ .Release.Name }}-{{ .Values.solidtime.Name }}
+    spec:
+      containers:
+        - name: gotenberg
+          image: gotenberg/gotenberg:7
+          ports:
+            - name: gotenberg
+              containerPort: 3000
+              protocol: TCP
+        - name: {{ .Values.solidtime.Name }}
+          image: {{ .Values.solidtime.image }}
+          imagePullPolicy: {{ .Values.pullPolicy }}
+          resources:
+            limits:
+              cpu: {{ .Values.solidtime.cpu.limits }}
+              memory: {{ .Values.solidtime.memory.limits }}
+            requests:
+              cpu: {{ .Values.solidtime.cpu.requests }}
+              memory: {{ .Values.solidtime.memory.requests }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.solidtime.port }}
+              protocol: {{ .Values.solidtime.protocol }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.solidtime.Name }}

@@ -149,3 +149,17 @@ evolution_api:
   memory:
     limits: 1Gi
     requests: 100Mi
+
+solidtime:
+    Name: solidtime
+    host: tracker.midt.dev.br
+    replicaCount: 1
+    image: solidtime/solidtime:main
+    port: 8000
+    protocol: TCP
+    cpu:
+        limits: 1
+        requests: 100m
+    memory:
+        limits: 1Gi
+        requests: 100Mi
