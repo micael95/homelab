@@ -2,6 +2,8 @@
 
 A personal home lab project designed to consolidate practical skills in **Kubernetes (k3s)**, **Helm**, **DevOps**, automation, and self-hosting. Inspired by platforms like CasaOS and Umbrel, but with full control via infrastructure as code and open-source tools. This project runs on a Raspberry Pi 4 (8GB RAM) and leverages Helm charts for modular, reproducible deployments.
 
+![Homelab Architecture](docs/arquitechture.png)
+
 ---
 
 ## Table of Contents
