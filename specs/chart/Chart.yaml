@@ -9,9 +9,15 @@ dependencies:
   - name: n8n
     version: 0.20.0
     repository: oci://8gears.container-registry.com/library
+    condition: n8n.enabled
   - name: postgresql
     version: 16.7.15
     repository: oci://registry-1.docker.io/bitnamicharts
+    condition: postgresql.enabled
   - name: nextcloud
     version: 6.6.10
     repository: https://nextcloud.github.io/helm/
+    condition: nextcloud.enabled
+  # - name: adguard-home
+  #   version: 4.5.2
+  #   repository: https://k8s-at-home.com/charts/
